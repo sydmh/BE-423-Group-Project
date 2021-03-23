@@ -23,20 +23,19 @@ df = df.dropna()
 df = df.reset_index(drop = True)
 df.to_csv('Yuma.csv', index = False)
 
-plt.hist(df['Coliforms /100 ml'])
-plt.show()
+tC, Clmbda = stats.boxcox(df['Coliforms /100 ml'])
+plt.hist(tC)
+plt.xlabel('Transformed Coliform Concentration'), plt.ylabel('Frequency')
+print(Clmbda)
+df['Coliforms /100 ml'] = tC
+h0 = df['Heat Units']
+df.to_csv('Yuma.csv', index = False)
 
-tdf, lmbda = stats.boxcox(df['Coliforms /100 ml'])
-plt.hist(tdf)
-print(lmbda)
-
-'''
-slope, intercept, r_value, p_value, std_err = stats.linregress(h0,C)
-plt.figure(1)
-plt.plot(h0, C, 'bo', C, intercept+slope*C)
+slope, intercept, r_value, p_value, std_err = stats.linregress(h0,tC)
+plt.figure(2)
+plt.plot(h0, tC, 'bo', tC, intercept+slope*tC, 'r-')
 plt.xlabel('h0'); plt.ylabel('C')
 plt.legend(['data', 'regression line'], loc='upper left')
 filestem = 'growth1_%dsteps' % 5
 plt.savefig('%spng' % filestem); plt.savefig('%s.pdf' % filestem)
-print('slope = ', slope, 'intercept = ', intercept)
-'''
+print('slope = ', slope, 'intercept = ', intercept, 'R value = ', r_value)
